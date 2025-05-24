@@ -139,7 +139,7 @@ function calculate() {
       <p><strong>Total Cost of Sales of Developer's Unit:</strong> ${formatNaira(developerRevenue)}</p>
       <p><strong>Commission on Developer Revenue (${commissionRate * 100}%):</strong> ${formatNaira(commission)}</p>
       <p><strong>Total Cost of Construction and Commission on Developer's Units:</strong> ${formatNaira(totalCostOfConstructionAndCommission)}</p>
-      <p><strong>Developer's Profit = Total Cost of Sales - Total Cost of Construction and Commission:</strong> ${formatNaira(developerProfit)}</p>
+      <p><strong>Developer's Profit (${formatNaira(developerRevenue)} - ${formatNaira(totalCostOfConstructionAndCommission)}) = </strong> ${formatNaira(developerProfit)}</p>
       
       <hr>
       <h5 class="mt-3">Sharing Breakdown</h5>
