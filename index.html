@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>June Halten Financial Tool</title>
+  <!-- Bootstrap CSS CDN -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+</head>
+<body class="bg-light">
+
+<div class="container py-5">
+  <h2 class="mb-4 text-primary">JHL Finance</h2>
+
+  <div class="row g-3">
+    <div class="col-md-6">
+      <label for="num3bed" class="form-label">Number of 3-Bedroom Units:</label>
+      <input type="number" id="num3bed" class="form-control" value="50" />
+    </div>
+    <div class="col-md-6">
+      <label for="num4bed" class="form-label">Number of 4-Bedroom Units:</label>
+      <input type="number" id="num4bed" class="form-control" value="18" />
+    </div>
+
+    <div class="col-md-6">
+      <label for="cost3bed" class="form-label">Cost per 3-Bedroom (₦):</label>
+      <input type="number" id="cost3bed" class="form-control" value="12500000" />
+    </div>
+    <div class="col-md-6">
+      <label for="cost4bed" class="form-label">Cost per 4-Bedroom (₦):</label>
+      <input type="number" id="cost4bed" class="form-control" value="15000000" />
+    </div>
+
+    <div class="col-md-6">
+      <label for="sale3bedNoMortgage" class="form-label">Sale Price 3-Bedroom (No Mortgage) (₦):</label>
+      <input type="number" id="sale3bedNoMortgage" class="form-control" value="55000000" />
+    </div>
+    <div class="col-md-6">
+      <label for="sale3bedMortgage" class="form-label">Sale Price 3-Bedroom (Mortgage) (₦):</label>
+      <input type="number" id="sale3bedMortgage" class="form-control" value="60000000" />
+    </div>
+
+    <div class="col-md-6">
+      <label for="sale4bedNoMortgage" class="form-label">Sale Price 4-Bedroom (No Mortgage) (₦):</label>
+      <input type="number" id="sale4bedNoMortgage" class="form-control" value="65000000" />
+    </div>
+    <div class="col-md-6">
+      <label for="sale4bedMortgage" class="form-label">Sale Price 4-Bedroom (Mortgage) (₦):</label>
+      <input type="number" id="sale4bedMortgage" class="form-control" value="70000000" />
+    </div>
+
+    <div class="col-md-6">
+      <label for="infraCost" class="form-label">Infrastructure Cost per Unit (₦):</label>
+      <input type="number" id="infraCost" class="form-control" value="2000000" />
+    </div>
+
+    <div class="col-md-6">
+      <label for="commissionRate" class="form-label">Commission Rate:</label>
+      <select id="commissionRate" class="form-select">
+        <option value="0.05" selected>5%</option>
+        <option value="0.06">6%</option>
+        <option value="0.07">7%</option>
+      </select>
+    </div>
+
+    <div class="col-md-6">
+      <label for="useMortgage" class="form-label">Use Mortgage Pricing?</label>
+      <select id="useMortgage" class="form-select">
+        <option value="no">No</option>
+        <option value="yes" selected>Yes</option>
+      </select>
+    </div>
+
+    <div class="col-12">
+      <button onclick="calculate()" class="btn btn-primary w-100">Calculate</button>
+    </div>
+  </div>
+
+  <div class="output mt-5" id="output"></div>
+</div>
+
+<script>
+function formatNaira(n) {
+  return '₦' + n.toLocaleString();
+}
+
+function calculate() {
+  const num3bed = parseInt(document.getElementById("num3bed").value);
+  const num4bed = parseInt(document.getElementById("num4bed").value);
+  const cost3bed = parseFloat(document.getElementById("cost3bed").value);
+  const cost4bed = parseFloat(document.getElementById("cost4bed").value);
+  const sale3bedNoMortgage = parseFloat(document.getElementById("sale3bedNoMortgage").value);
+  const sale4bedNoMortgage = parseFloat(document.getElementById("sale4bedNoMortgage").value);
+  const sale3bedMortgage = parseFloat(document.getElementById("sale3bedMortgage").value);
+  const sale4bedMortgage = parseFloat(document.getElementById("sale4bedMortgage").value);
+  const infraCost = parseFloat(document.getElementById("infraCost").value);
+  const commissionRate = parseFloat(document.getElementById("commissionRate").value);
+  const useMortgage = document.getElementById("useMortgage").value === "yes";
+
+  const totalUnits = num3bed + num4bed;
+
+  const totalConstructionCost = (num3bed * cost3bed) + (num4bed * cost4bed);
+  const totalInfraCost = totalUnits * infraCost;
+  const totalBuildingCost = totalConstructionCost + totalInfraCost;
+
+  const sale3bed = useMortgage ? sale3bedMortgage : sale3bedNoMortgage;
+  const sale4bed = useMortgage ? sale4bedMortgage : sale4bedNoMortgage;
+  const totalRevenue = (num3bed * sale3bed) + (num4bed * sale4bed);
+
+  const commission = totalRevenue * commissionRate;
+  const totalCost = totalBuildingCost + commission;
+  const profit = totalRevenue - totalCost;
+
+  const breakdown = {
+    dividend: profit * 0.50,
+    overhead: profit * 0.10,
+    reinvestment: profit * 0.30,
+    savings: profit * 0.10
+  };
+
+  const landownerShare = profit * 0.40;
+  const developerShare = profit * 0.60;
+
+  document.getElementById("output").innerHTML = `
+    <div class="card shadow-sm p-4">
+      <h4 class="text-success mb-3">Results (${useMortgage ? 'With Mortgage' : 'Without Mortgage'}, ${commissionRate * 100}% Commission)</h4>
+      <p><strong>Total Units:</strong> ${totalUnits}</p>
+      <p><strong>Total Revenue:</strong> ${formatNaira(totalRevenue)}</p>
+      <p><strong>Construction Cost:</strong> ${formatNaira(totalConstructionCost)}</p>
+      <p><strong>Infrastructure Cost:</strong> ${formatNaira(totalInfraCost)}</p>
+      <p><strong>Total Building Cost:</strong> ${formatNaira(totalBuildingCost)}</p>
+      <p><strong>Commission (${commissionRate * 100}%):</strong> ${formatNaira(commission)}</p>
+      <p><strong>Total Cost (Building + Commission):</strong> ${formatNaira(totalCost)}</p>
+      <p><strong>Estimated Profit:</strong> ${formatNaira(profit)}</p>
+      <hr>
+      <h5 class="mt-3">Profit Breakdown</h5>
+      <ul class="list-group">
+        <li class="list-group-item"><strong>JHL Dividend (50%):</strong> ${formatNaira(breakdown.dividend)}</li>
+        <li class="list-group-item"><strong>Office Overhead (10%):</strong> ${formatNaira(breakdown.overhead)}</li>
+        <li class="list-group-item"><strong>Reinvestment (30%):</strong> ${formatNaira(breakdown.reinvestment)}</li>
+        <li class="list-group-item"><strong>Savings (10%):</strong> ${formatNaira(breakdown.savings)}</li>
+        <li class="list-group-item bg-light"><strong>Landowner Share (40% of Profit):</strong> ${formatNaira(landownerShare)}</li>
+        <li class="list-group-item bg-light"><strong>Developer Share (60% of Profit):</strong> ${formatNaira(developerShare)}</li>
+      </ul>
+    </div>
+  `;
+}
+</script>
+
+
+</body>
+</html>
